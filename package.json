@@ -1,0 +1,10 @@
+{
+  "name": "digging-into-node",
+  "version": "1.0.0",
+  "dependencies": {
+    "minimist": "^1.2.5"
+  },
+  "devDependencies": {
+    "get-stdin": "^8.0.0"
+  }
+}
