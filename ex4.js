@@ -49,17 +49,15 @@ async function main() {
 	};
 
 	let initSQL = fs.readFileSync(DB_SQL_PATH,"utf-8");
-	// TODO: initialize the DB structure
+	await SQL3.exec(initSQL);
 
 
 	let other = args.other;
 	let something = Math.trunc(Math.random() * 1E9);
 
-	// ***********
 
-	// TODO: insert values and print all records
 
-	error("Oops!");
+	// error("Oops!");
 }
 
 function error(err) {
