@@ -4,6 +4,7 @@
 
 const path = require("path");
 const fs = require("fs");
+const Transform = require('stream').Transform;
 
 // var getStdin = require("get-stdin");
 
@@ -17,15 +18,18 @@ const BASEPATH =
 
 
 if (args.help || process.argv.length <= 2) {
-    error(null,true);
-} else if (args._.includes("-") || args.in) {
+    error(null,/*showHelp=*/true);
+}
+else if (args._.includes("-") || args.in) {
     processFile(process.stdin);
-} else if (args.file) {
+}
+else if (args.file) {
     let filePath = path.join(BASEPATH,args.file);
     let stream = fs.createReadStream(filePath);
 
     processFile(stream);
-} else {
+}
+else {
     error("Usage incorrect.",true);
 }
 
@@ -36,8 +40,22 @@ if (args.help || process.argv.length <= 2) {
 
 function processFile(inStream) {
     let outStream = inStream;
-    const targetStream = process.stdout;
 
+    const upperStream = new Transform({
+        transform(chunk, enc, cb) {
+            // chunk is a Buffer
+            this.push(chunk.toString().toUpperCase());
+
+            // add a 500 ms delay for each chunk
+            // setTimeout(cb, 500);
+
+            cb();
+        }
+    });
+
+    outStream = outStream.pipe(upperStream);
+
+    const targetStream = process.stdout;
     outStream.pipe(targetStream);
 }
 
