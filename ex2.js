@@ -9,13 +9,14 @@ const Transform = require('stream').Transform;
 // var getStdin = require("get-stdin");
 
 const args = require("minimist")(process.argv.slice(2),{
-    boolean: ["help","in",],
+    boolean: ["help","in", "out"],
     string: ["file",],
 });
 
-const BASEPATH =
+const BASE_PATH =
     path.resolve(process.env.BASEPATH || __dirname);
 
+const OUTFILE = path.join(BASE_PATH, "out.txt");
 
 if (args.help || process.argv.length <= 2) {
     error(null,/*showHelp=*/true);
@@ -24,7 +25,7 @@ else if (args._.includes("-") || args.in) {
     processFile(process.stdin);
 }
 else if (args.file) {
-    let filePath = path.join(BASEPATH,args.file);
+    let filePath = path.join(BASE_PATH,args.file);
     let stream = fs.createReadStream(filePath);
 
     processFile(stream);
@@ -55,17 +56,25 @@ function processFile(inStream) {
 
     outStream = outStream.pipe(upperStream);
 
-    const targetStream = process.stdout;
+    let targetStream;
+
+    if (args.out) {
+        targetStream = process.stdout
+    } else {
+        targetStream = fs.createWriteStream(OUTFILE);
+    }
+
+    process.stdout;
     outStream.pipe(targetStream);
 }
 
 function printHelp() {
     console.log("ex1 usage:");
     console.log("");
-    console.log("--help                      print this help");
-    console.log("-, --in                     read file from stdin");
-    console.log("--file={FILENAME}           read file from {FILENAME}");
-    console.log("");
+    console.log("--help             print this help");
+    console.log("--file={FILENAME}  process the file");
+    console.log("--in, -            process stdin");
+    console.log("--out              print to stdout");
     console.log("");
 }
 
