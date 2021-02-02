@@ -55,9 +55,53 @@ async function main() {
 	let other = args.other;
 	let something = Math.trunc(Math.random() * 1E9);
 
+	// *********
 
+	const otherID = await insertOrLookupOther(other);
+	if (otherID) {
+		let result = await insertSomething(otherID, something);
+		if (result) {
+			return;
+		}
 
-	// error("Oops!");
+		return;
+	}
+
+	error("Oops!");
+}
+
+async function insertOrLookupOther(other) {
+	let result = await SQL3.get(
+		`
+			SELECT
+				id
+			FROM 
+			     Other 
+			WHERE
+				data = ?
+		`,
+		other
+	);
+
+	if (result && result.id) {
+		return result.id
+	} else {
+		result = await SQL3.run(
+			`
+				INSERT INTO
+					Other (data)
+				VALUES
+					(?)
+			`
+		);
+		if (result && result.lastID) {
+			return result.lastID;
+		}
+	}
+}
+
+async function insertSomething(otherID, something) {
+
 }
 
 function error(err) {
