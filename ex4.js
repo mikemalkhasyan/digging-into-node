@@ -24,7 +24,7 @@ main().catch(console.error);
 
 // ************************************
 
-let SQL3;
+var SQL3;
 
 async function main() {
 	if (!args.other) {
@@ -61,6 +61,11 @@ async function main() {
 	if (otherID) {
 		let result = await insertSomething(otherID, something);
 		if (result) {
+			let records = await getAllRecords();
+
+			if (records && records.length > 0) {
+				console.table(records);
+			}
 			return;
 		}
 
@@ -79,8 +84,7 @@ async function insertOrLookupOther(other) {
 			     Other 
 			WHERE
 				data = ?
-		`,
-		other
+		`
 	);
 
 	if (result && result.id) {
@@ -92,7 +96,8 @@ async function insertOrLookupOther(other) {
 					Other (data)
 				VALUES
 					(?)
-			`
+			`,
+			other
 		);
 		if (result && result.lastID) {
 			return result.lastID;
@@ -101,6 +106,21 @@ async function insertOrLookupOther(other) {
 }
 
 async function insertSomething(otherID, something) {
+	const result = await SQL3.run(
+		`
+				INSERT INTO
+					Something (otherID, data)
+				VALUES
+					(?, ?)
+			`,
+			otherID,
+			something
+	);
+
+	return result && result.changes > 0;
+}
+
+async function getAllRecords() {
 
 }
 
