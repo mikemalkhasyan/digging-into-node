@@ -2,6 +2,7 @@
   "name": "digging-into-node",
   "version": "1.0.0",
   "dependencies": {
+    "caf": "^12.0.1",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
