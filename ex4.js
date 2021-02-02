@@ -65,6 +65,7 @@ async function main() {
 
 			if (records && records.length > 0) {
 				console.table(records);
+				return;
 			}
 			return;
 		}
@@ -87,18 +88,20 @@ async function insertOrLookupOther(other) {
 		`
 	);
 
+
 	if (result && result.id) {
 		return result.id
 	} else {
 		result = await SQL3.run(
 			`
 				INSERT INTO
-					Other (data)
+					Other ('data')
 				VALUES
 					(?)
 			`,
 			other
 		);
+
 		if (result && result.lastID) {
 			return result.lastID;
 		}
@@ -121,7 +124,22 @@ async function insertSomething(otherID, something) {
 }
 
 async function getAllRecords() {
+	const result = SQL3.all(
+		`
+			SELECT 
+				Other.data AS 'other',
+				Something.data AS 'something'
+			FROM
+				Something JOIN Other
+				ON (Something.otherID = Other.id)
+			ORDER BY 
+				Other.id DESC, Something.data ASC
+		`
+	);
 
+	if (result && result.length > 0) {
+		return result;
+	}
 }
 
 function error(err) {
