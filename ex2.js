@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// node ex2.js --file=files/lorem.txt --compress
+// cat out.txt.gz | node ex2.js --uncompress --in --out
 
 "use strict";
 
@@ -12,7 +12,7 @@ const zlib = require('zlib');
 // var getStdin = require("get-stdin");
 
 const args = require("minimist")(process.argv.slice(2),{
-    boolean: ["help","in", "out", "compress"],
+    boolean: ["help","in", "out", "compress", "uncompress"],
     string: ["file",],
 });
 
@@ -44,6 +44,12 @@ else {
 
 function processFile(inStream) {
     let outStream = inStream;
+
+    if (args.uncompress) {
+        let gunzipStream = zlib.createGunzip();
+
+        outStream = outStream.pipe(gunzipStream);
+    }
 
     const upperStream = new Transform({
         transform(chunk, enc, cb) {
@@ -78,13 +84,15 @@ function processFile(inStream) {
 }
 
 function printHelp() {
-    console.log("ex1 usage:");
-    console.log("");
+    console.log("ex2 usage:");
+    console.log("  ex2 usage:");
+    console.log("  ex2.js --file={FILENAME}");
     console.log("--help             print this help");
     console.log("--file={FILENAME}  process the file");
     console.log("--in, -            process stdin");
     console.log("--out              print to stdout");
     console.log("--compress         gzip the output");
+    console.log("--uncompress       ungzip the input");
     console.log("");
 }
 
