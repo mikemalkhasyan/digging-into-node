@@ -75,6 +75,15 @@ function main() {
 }
 
 async function handleRequest(req, res) {
+	if (req.url === '/get-records') {
+		let records = await getAllRecords();
+
+		res.writeHead(200, {
+			"Content-Type": "application/json",
+			"Cache-control": "no-cache"
+		});
+		res.end(JSON.stringify(records));
+	}
 	fileServer.serve(req, res);
 }
 
@@ -82,32 +91,32 @@ async function handleRequest(req, res) {
 // NOTE: if sqlite3 is not working for you,
 //   comment this version out
 // *************************
-async function getAllRecords() {
-	var result = await SQL3.all(
-		`
-		SELECT
-			Something.data AS "something",
-			Other.data AS "other"
-		FROM
-			Something
-			JOIN Other ON (Something.otherID = Other.id)
-		ORDER BY
-			Other.id DESC, Something.data
-		`
-	);
-
-	return result;
-}
+// async function getAllRecords() {
+// 	var result = await SQL3.all(
+// 		`
+// 		SELECT
+// 			Something.data AS "something",
+// 			Other.data AS "other"
+// 		FROM
+// 			Something
+// 			JOIN Other ON (Something.otherID = Other.id)
+// 		ORDER BY
+// 			Other.id DESC, Something.data
+// 		`
+// 	);
+//
+// 	return result;
+// }
 
 // *************************
 // NOTE: uncomment and use this version if
 //   sqlite3 is not working for you
 // *************************
-// async function getAllRecords() {
-// 	// fake DB results returned
-// 	return [
-// 		{ something: 53988400, other: "hello" },
-// 		{ something: 342383991, other: "hello" },
-// 		{ something: 7367746, other: "world" },
-// 	];
-// }
+async function getAllRecords() {
+	// fake DB results returned
+	return [
+		{ something: 53988400, other: "hello" },
+		{ something: 342383991, other: "hello" },
+		{ something: 7367746, other: "world" },
+	];
+}
